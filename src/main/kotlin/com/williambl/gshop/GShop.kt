@@ -27,7 +27,15 @@ package com.williambl.gshop
 import com.williambl.gshop.configs.GShopConfig
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
+import io.github.gunpowder.api.builders.ChestGui
 import io.github.gunpowder.api.builders.Command
+import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.entity.player.PlayerInventory
+import net.minecraft.screen.NamedScreenHandlerFactory
+import net.minecraft.screen.ScreenHandler
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.LiteralText
+import net.minecraft.text.Text
 
 class GShop : GunpowderModule {
     override val name = "gshop"
@@ -38,8 +46,9 @@ class GShop : GunpowderModule {
     override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
         Command.builder(dispatcher) {
             command("shop") {
-                executes {
-                    config.shops.size
+                executes { ctx ->
+                    ctx.source.player.openHandledScreen(config.shops[0].gui(ctx.source.player))
+                    0
                 }
             }
         }

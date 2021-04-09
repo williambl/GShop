@@ -21,6 +21,8 @@ interface ShopEntry {
     val priceToBuy: Int
     val priceToSell: Int
 
+    val icon: ItemStack
+
     class Deserializer : StdDeserializer<ShopEntry>(ShopEntry::class.java) {
         override fun deserialize(p: JsonParser, ctx: DeserializationContext): ShopEntry {
             val tree = p.readValueAsTree<TreeNode>()
@@ -34,6 +36,7 @@ interface ShopEntry {
 @JsonDeserialize(using = ItemStackShopEntry.Deserializer::class)
 data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Int = 0, override val priceToSell: Int = 0): ShopEntry {
     override val type: ShopEntryType = ShopEntryType.ITEM_STACK
+    override val icon: ItemStack = stack
 
     class Serializer : StdSerializer<ItemStackShopEntry>(ItemStackShopEntry::class.java) {
         override fun serialize(value: ItemStackShopEntry, gen: JsonGenerator, provider: SerializerProvider) {
