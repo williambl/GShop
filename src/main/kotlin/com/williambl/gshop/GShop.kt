@@ -38,11 +38,14 @@ class GShop : GunpowderModule {
     override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
         Command.builder(dispatcher) {
             command("shop") {
+                executes {
+                    config.shops.size
+                }
             }
         }
     }
 
     override fun registerConfigs() {
-        gunpowder.registry.registerConfig("gshop.yml", GShopConfig::class.java, GShopConfig(Unit))
+        gunpowder.registry.registerConfig("gshop.yml", GShopConfig::class.java, GShopConfig())
     }
 }
