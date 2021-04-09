@@ -1,8 +1,8 @@
 {
   "required": true,
-  "package": "io.github.gunpowder.mixin.template",
+  "package": "com.williambl.gshop.mixin",
   "compatibilityLevel": "JAVA_8",
-  "plugin": "io.github.gunpowder.mixin.plugin.TemplateModulePlugin",
+  "plugin": "com.williambl.gshop.mixin.plugin.GShopModulePlugin",
   "mixins": [
   ],
   "injectors": {

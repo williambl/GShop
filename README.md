@@ -1,2 +1,7 @@
-# GunpowderTemplate
-Template for creating Gunpowder modules
+# GShop
+
+A Gunpowder add-on which adds shops.
+
+## Commands
+
+## Config

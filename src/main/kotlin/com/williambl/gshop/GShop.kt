@@ -22,14 +22,27 @@
  * SOFTWARE.
  */
 
-package io.github.gunpowder
+package com.williambl.gshop
 
+import com.williambl.gshop.configs.GShopConfig
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
+import io.github.gunpowder.api.builders.Command
 
-class GunpowderTemplateModule : GunpowderModule {
-    override val name = "template"
+class GShop : GunpowderModule {
+    override val name = "gshop"
     override val toggleable = true
-    val gunpowder: GunpowderMod
+    private val gunpowder: GunpowderMod
         get() = GunpowderMod.instance
+
+    override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
+        Command.builder(dispatcher) {
+            command("shop") {
+            }
+        }
+    }
+
+    override fun registerConfigs() {
+        gunpowder.registry.registerConfig("gshop.yml", GShopConfig::class.java, GShopConfig(Unit))
+    }
 }

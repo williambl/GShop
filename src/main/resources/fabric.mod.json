@@ -1,23 +1,24 @@
 {
   "schemaVersion": 1,
-  "id": "gunpowder-template",
+  "id": "gshop",
   "version": "${version}",
-  "name": "Gunpowder Template",
-  "description": "Gunpowder Template Module",
+  "name": "GShop",
+  "description": "Server-side mod adding shops",
   "license": "MIT",
-  "icon": "assets/gunpowder/icon.png",
+  "icon": "assets/gshop/icon.png",
   "environment": "*",
   "entrypoints": {
     "gunpowder:modules": [
-      "io.github.gunpowder.GunpowderTemplateModule"
+      "com.williambl.gshop.GShop"
     ]
   },
   "mixins": [
-    "mixins.template.gunpowder.json"
+    "mixins.gshop.json"
   ],
   "depends": {
     "gunpowder-base": ">=${gunpowder}",
     "fabricloader": ">=0.8.9",
-    "fabric": "*"
+    "fabric": "*",
+    "fabric-permissions-api-v0": "*"
   }
 }

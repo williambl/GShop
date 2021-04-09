@@ -22,18 +22,16 @@
  * SOFTWARE.
  */
 
-package io.github.gunpowder.mixin.plugin
+package com.williambl.gshop.mixin.plugin
 
 import org.objectweb.asm.tree.ClassNode
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo
 
-class TemplateModulePlugin : IMixinConfigPlugin {
+class GShopModulePlugin : IMixinConfigPlugin {
     override fun onLoad(mixinPackage: String) {}
     override fun getRefMapperConfig(): String? { return null }
-    override fun shouldApplyMixin(targetClassName: String, mixinClassName: String): Boolean {
-        return true // TODO: Config?
-    }
+    override fun shouldApplyMixin(targetClassName: String, mixinClassName: String): Boolean { return true }
     override fun acceptTargets(myTargets: Set<String>, otherTargets: Set<String>) {}
     override fun getMixins(): List<String>? { return null }
     override fun preApply(targetClassName: String, targetClass: ClassNode, mixinClassName: String, mixinInfo: IMixinInfo) {}
