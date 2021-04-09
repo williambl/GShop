@@ -9,14 +9,14 @@ import net.minecraft.item.Items
 import net.minecraft.text.LiteralText
 
 data class ShopPage(val name: String, val icon: ItemStackShopEntry, val entries: List<ShopEntry>) {
-    fun screen(previous: Screen? = null): Screen = {
+    fun screen(previous: (() -> Screen)? = null): Screen = { player -> {
         clearButtons()
         entries.forEachIndexed { i, entry ->
-            button(i, 0, entry.icon) { actionType, container -> }
+            button(i, 0, entry.icon) { actionType, container -> entry.screen {screen(previous)}(player)(container) }
         }
 
         if (previous != null) {
-            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> container.previous() }
+            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(player)(container) }
         }
-    }
+    }}
 }
