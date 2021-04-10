@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.text.LiteralText
 
-data class ShopPage(val name: String, val icon: ItemStackShopEntry, val entries: List<ShopEntry>) {
+data class ShopCategory(val name: String, val icon: ItemStackShopEntry, val entries: List<ShopEntry>) {
     fun screen(previous: (() -> Screen)? = null): Screen = { player -> {
         clearButtons()
         entries.forEachIndexed { i, entry ->
