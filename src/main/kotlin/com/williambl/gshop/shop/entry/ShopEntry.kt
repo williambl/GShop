@@ -11,20 +11,22 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import com.williambl.gshop.Screen
+import com.williambl.gshop.*
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.StringNbtReader
 import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.text.LiteralText
+import net.minecraft.util.Formatting
+import java.math.BigDecimal
 import kotlin.math.max
 
 @JsonDeserialize(using = ShopEntry.Deserializer::class)
 interface ShopEntry {
     val type: ShopEntryType
-    val priceToBuy: Int
-    val priceToSell: Int
+    val priceToBuy: BigDecimal
+    val priceToSell: BigDecimal
 
     val icon: ItemStack
 
@@ -41,14 +43,31 @@ interface ShopEntry {
 
 @JsonSerialize(using = ItemStackShopEntry.Serializer::class)
 @JsonDeserialize(using = ItemStackShopEntry.Deserializer::class)
-data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Int = 0, override val priceToSell: Int = 0): ShopEntry {
+data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: BigDecimal = BigDecimal.ZERO, override val priceToSell: BigDecimal = BigDecimal.ZERO): ShopEntry {
     override val type: ShopEntryType = ShopEntryType.ITEM_STACK
-    override val icon: ItemStack = stack
+    override val icon: ItemStack = stack.copy()
 
     override fun screen(previous: (() -> Screen)?): Screen = { player -> {
         clearButtons()
 
         val stackToSell = stack.copy()
+        val sellButtonIcon = Items.PINK_DYE.defaultStack.setCustomName(LiteralText("SELL"))
+        val buyButtonIcon = Items.LIME_DYE.defaultStack.setCustomName(LiteralText("BUY"))
+        var amountToSell = BigDecimal.ZERO
+        var amountToBuy = BigDecimal.ZERO
+
+        fun update() {
+            amountToSell = priceToSell * BigDecimal(stackToSell.count)
+            amountToBuy = priceToBuy * BigDecimal(stackToSell.count)
+
+            sellButtonIcon.setCustomName(if (player.canSell(stackToSell)) LiteralText("SELL") else LiteralText("X Cannot Sell X").formatted(Formatting.DARK_RED))
+            buyButtonIcon.setCustomName(if (player.canBuy(amountToBuy)) LiteralText("BUY") else LiteralText("X Cannot Buy X").formatted(Formatting.DARK_RED))
+
+            sellButtonIcon.setLore(listOf(LiteralText("$$amountToSell")))
+            buyButtonIcon.setLore(listOf(LiteralText("$$amountToBuy")))
+        }
+
+        update()
 
         button(4, 1, stackToSell) { _, _ ->  }
         button(2, 2, Items.RED_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("-1"))) { actionType, container ->
@@ -64,17 +83,18 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Int
             if (actionType == SlotActionType.PICKUP) stackToSell.count += 5
         }
 
-        button(3, 4, Items.PINK_DYE.defaultStack.setCustomName(LiteralText("SELL"))) { actionType, container ->
-            val slot = player.inventory.method_7371(stackToSell)
-            if (slot > 0) {
-                player.inventory.removeStack(slot, stackToSell.count)
+        button(3, 4, sellButtonIcon) { actionType, container ->
+            if (player.canSell(stackToSell)) {
+                player.sell(stack, amountToSell)
                 player.closeHandledScreen()
             }
         }
 
-        button(5, 4, Items.LIME_DYE.defaultStack.setCustomName(LiteralText("BUY"))) { actionType, container ->
-            player.giveItemStack(stackToSell)
-            player.closeHandledScreen()
+        button(5, 4, buyButtonIcon) { actionType, container ->
+            if (player.canBuy(amountToBuy)) {
+                player.buy(stackToSell, amountToBuy)
+                player.closeHandledScreen()
+            }
         }
 
         if (previous != null) {
@@ -87,10 +107,10 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Int
             gen.writeStartObject()
             gen.writeStringField("type", value.type.name)
             gen.writeStringField("stack", CompoundTag().also { value.stack.toTag(it) }.toString())
-            if (value.priceToBuy != 0) {
+            if (value.priceToBuy != BigDecimal.ZERO) {
                 gen.writeNumberField("priceToBuy", value.priceToBuy)
             }
-            if (value.priceToSell != 0) {
+            if (value.priceToSell != BigDecimal.ZERO) {
                 gen.writeNumberField("priceToSell", value.priceToSell)
             }
             gen.writeEndObject()
@@ -100,7 +120,7 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Int
     class Deserializer : StdDeserializer<ItemStackShopEntry>(ItemStackShopEntry::class.java) {
         override fun deserialize(p: JsonParser, ctx: DeserializationContext): ItemStackShopEntry {
             val tree = ctx.getAttribute("ShopEntryTree") as TreeNode? ?: p.readValueAsTree()
-            return ItemStackShopEntry(ItemStack.fromTag(StringNbtReader.parse((tree["stack"] as TextNode).asText())), (tree["priceToBuy"] as JsonNode?)?.asInt() ?: 0, (tree["priceToSell"] as JsonNode?)?.asInt() ?: 0)
+            return ItemStackShopEntry(ItemStack.fromTag(StringNbtReader.parse((tree["stack"] as TextNode).asText())), (tree["priceToBuy"] as JsonNode?)?.decimalValue() ?: BigDecimal.ZERO, (tree["priceToSell"] as JsonNode?)?.decimalValue() ?: BigDecimal.ZERO)
         }
     }
 }

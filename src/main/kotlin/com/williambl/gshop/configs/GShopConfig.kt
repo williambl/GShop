@@ -7,9 +7,10 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.Identifier
+import java.math.BigDecimal
 
 data class GShopConfig(val shops: List<Shop> = listOf(
     Shop("default", listOf(
-        ShopPage("page one", ItemStackShopEntry(ItemStack(Items.APPLE)), listOf(ItemStackShopEntry(ItemStack(Items.APPLE), 10, 10)))
+        ShopPage("page one", ItemStackShopEntry(ItemStack(Items.APPLE)), listOf(ItemStackShopEntry(ItemStack(Items.APPLE), BigDecimal.TEN, BigDecimal.TEN)))
     ))
 ))
