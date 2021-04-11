@@ -72,20 +72,24 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
         button(4, 1, stackToSell) { _, _ ->  }
         button(2, 2, Items.RED_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("-1"))) { actionType, container ->
             if (actionType == SlotActionType.PICKUP) stackToSell.count = max(stackToSell.count - 1, 1)
+            update()
         }
         button(1, 2, Items.RED_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("-5"))) { actionType, container ->
             if (actionType == SlotActionType.PICKUP) stackToSell.count = max(stackToSell.count - 5, 1)
+            update()
         }
         button(6, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+1"))) { actionType, container ->
             if (actionType == SlotActionType.PICKUP) stackToSell.count++
+            update()
         }
         button(7, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+5"))) { actionType, container ->
             if (actionType == SlotActionType.PICKUP) stackToSell.count += 5
+            update()
         }
 
         button(3, 4, sellButtonIcon) { actionType, container ->
             if (player.canSell(stackToSell)) {
-                player.sell(stack, amountToSell)
+                player.sell(stackToSell, amountToSell)
                 player.closeHandledScreen()
             }
         }
