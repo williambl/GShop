@@ -60,8 +60,8 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             amountToSell = priceToSell * BigDecimal(stackToSell.count)
             amountToBuy = priceToBuy * BigDecimal(stackToSell.count)
 
-            sellButtonIcon.setCustomName(if (player.canSell(stackToSell)) LiteralText("SELL") else LiteralText("X Cannot Sell X").formatted(Formatting.DARK_RED))
-            buyButtonIcon.setCustomName(if (player.canBuy(amountToBuy)) LiteralText("BUY") else LiteralText("X Cannot Buy X").formatted(Formatting.DARK_RED))
+            sellButtonIcon.setCustomName(if (player.canSell(stackToSell)) LiteralText("SELL") else LiteralText("Cannot Sell").formatted(Formatting.DARK_RED))
+            buyButtonIcon.setCustomName(if (player.canBuy(amountToBuy)) LiteralText("BUY") else LiteralText("Cannot Buy").formatted(Formatting.DARK_RED))
 
             sellButtonIcon.setLore(listOf(LiteralText("$$amountToSell")))
             buyButtonIcon.setLore(listOf(LiteralText("$$amountToBuy")))
@@ -78,12 +78,20 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             if (actionType == SlotActionType.PICKUP) stackToSell.count = max(stackToSell.count - 5, 1)
             update()
         }
+        button(0, 2, Items.RED_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("-64"))) { actionType, container ->
+            if (actionType == SlotActionType.PICKUP) stackToSell.count = 1
+            update()
+        }
         button(6, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+1"))) { actionType, container ->
             if (actionType == SlotActionType.PICKUP) stackToSell.count++
             update()
         }
         button(7, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+5"))) { actionType, container ->
             if (actionType == SlotActionType.PICKUP) stackToSell.count += 5
+            update()
+        }
+        button(8, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+64"))) { actionType, container ->
+            if (actionType == SlotActionType.PICKUP) stackToSell.count += 64
             update()
         }
 
