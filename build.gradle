@@ -33,4 +33,5 @@ dependencies {
     }
 
     modImplementation include("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    modImplementation "io.github.gunpowder:gunpowder-currency:${gunpowder_currency_version}"
 }
