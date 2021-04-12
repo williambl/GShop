@@ -46,7 +46,7 @@ class GShop : GunpowderModule {
     override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
         Command.builder(dispatcher) {
             command("shop") {
-                requires(Permissions.require("gshop.viewShop", 2)::test)
+                requires(Permissions.require("gshop.viewshop", 2)::test)
                 argument("shop", ShopArgumentType()) {
                     executes { ctx ->
                         val shop = getShop(ctx, "shop")
