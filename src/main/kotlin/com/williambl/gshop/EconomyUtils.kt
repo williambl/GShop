@@ -15,7 +15,7 @@ fun ServerPlayerEntity.canBuy(amount: BigDecimal): Boolean {
 }
 
 fun ServerPlayerEntity.canSell(stack: ItemStack): Boolean {
-    return inventory.getSlotWithStack(stack).let {
+    return inventory.method_7371(stack).let {
         it >= 0 && inventory.getStack(it).count >= stack.count
     }
 }
