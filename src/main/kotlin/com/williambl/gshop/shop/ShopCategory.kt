@@ -3,8 +3,6 @@ package com.williambl.gshop.shop
 import com.williambl.gshop.Screen
 import com.williambl.gshop.shop.entry.ItemStackShopEntry
 import com.williambl.gshop.shop.entry.ShopEntry
-import io.github.gunpowder.api.builders.ChestGui
-import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.text.LiteralText
 

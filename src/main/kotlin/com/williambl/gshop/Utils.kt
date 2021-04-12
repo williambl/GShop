@@ -3,7 +3,6 @@ package com.williambl.gshop
 import com.williambl.gshop.configs.GShopConfig
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.builders.ChestGui
-import net.fabricmc.fabric.api.util.NbtType
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag

@@ -25,31 +25,17 @@
 package com.williambl.gshop
 
 import ca.stellardrift.colonel.api.ServerArgumentType
-import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType.*
 import com.williambl.gshop.configs.GShopConfig
-import com.williambl.gshop.shop.ShopCategory
-import com.williambl.gshop.shop.entry.ItemStackShopEntry
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
-import io.github.gunpowder.api.builders.ChestGui
 import io.github.gunpowder.api.builders.Command
 import me.lucko.fabric.api.permissions.v0.Permissions
-import net.minecraft.command.argument.ArgumentTypes
 import net.minecraft.command.argument.EntityArgumentType.getPlayer
 import net.minecraft.command.argument.EntityArgumentType.player
-import net.minecraft.command.argument.serialize.ConstantArgumentSerializer
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.item.Items
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.screen.NamedScreenHandlerFactory
-import net.minecraft.screen.ScreenHandler
-import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.LiteralText
-import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import org.jetbrains.exposed.sql.stringLiteral
 
 class GShop : GunpowderModule {
     override val name = "gshop"
