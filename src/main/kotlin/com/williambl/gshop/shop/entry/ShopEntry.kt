@@ -132,6 +132,7 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
     class Deserializer : StdDeserializer<ItemStackShopEntry>(ItemStackShopEntry::class.java) {
         override fun deserialize(p: JsonParser, ctx: DeserializationContext): ItemStackShopEntry {
             val tree = ctx.getAttribute("ShopEntryTree") as TreeNode? ?: p.readValueAsTree()
+            ctx.setAttribute("ShopEntryTree", null)
             return ItemStackShopEntry(ItemStack.fromTag(StringNbtReader.parse((tree["stack"] as TextNode).asText())), (tree["priceToBuy"] as JsonNode?)?.decimalValue() ?: BigDecimal.ZERO, (tree["priceToSell"] as JsonNode?)?.decimalValue() ?: BigDecimal.ZERO)
         }
     }
