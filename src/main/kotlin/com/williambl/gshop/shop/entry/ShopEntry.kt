@@ -136,3 +136,53 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
         }
     }
 }
+
+@JsonSerialize(using = CommandShopEntry.Serializer::class)
+@JsonDeserialize(using = CommandShopEntry.Deserializer::class)
+data class CommandShopEntry(val command: String, override val icon: ItemStack, override val priceToBuy: BigDecimal = BigDecimal.ZERO): ShopEntry {
+    override val type: ShopEntryType = ShopEntryType.COMMAND
+    override val priceToSell: BigDecimal = BigDecimal.ZERO
+
+    override fun screen(previous: (() -> Screen)?): Screen = { player -> {
+        clearButtons()
+
+        val buyButtonIcon = Items.LIME_DYE.defaultStack.setCustomName(LiteralText("BUY"))
+        buyButtonIcon.setCustomName(if (player.canBuy(priceToBuy)) LiteralText("BUY") else LiteralText("Cannot Buy").formatted(Formatting.DARK_RED))
+        buyButtonIcon.setLore(listOf(LiteralText("$$priceToBuy")))
+
+        button(4, 1, icon) { _, _ ->  }
+
+        button(4, 4, buyButtonIcon) { actionType, container ->
+            if (player.canBuy(priceToBuy)) {
+                player.buy(priceToBuy)
+                player.server.commandManager.execute(player.server.commandSource, command.replace("--buyer--", player.gameProfile.name))
+                player.closeHandledScreen()
+            }
+        }
+
+        if (previous != null) {
+            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(player)(container) }
+        }
+    }}
+
+    class Serializer : StdSerializer<CommandShopEntry>(CommandShopEntry::class.java) {
+        override fun serialize(value: CommandShopEntry, gen: JsonGenerator, provider: SerializerProvider) {
+            gen.writeStartObject()
+            gen.writeStringField("type", value.type.name)
+            gen.writeStringField("command", value.command)
+            gen.writeStringField("icon", CompoundTag().also { value.icon.toTag(it) }.toString())
+            if (value.priceToBuy != BigDecimal.ZERO) {
+                gen.writeNumberField("priceToBuy", value.priceToBuy)
+            }
+            gen.writeEndObject()
+        }
+    }
+
+    class Deserializer : StdDeserializer<CommandShopEntry>(CommandShopEntry::class.java) {
+        override fun deserialize(p: JsonParser, ctx: DeserializationContext): CommandShopEntry {
+            val tree = ctx.getAttribute("ShopEntryTree") as TreeNode? ?: p.readValueAsTree()
+            ctx.setAttribute("ShopEntryTree", null)
+            return CommandShopEntry((tree["command"] as TextNode).asText(), ItemStack.fromTag(StringNbtReader.parse((tree["icon"] as TextNode).asText())), (tree["priceToBuy"] as JsonNode?)?.decimalValue() ?: BigDecimal.ZERO)
+        }
+    }
+}

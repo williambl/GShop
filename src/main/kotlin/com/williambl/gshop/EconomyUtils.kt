@@ -29,3 +29,11 @@ fun ServerPlayerEntity.sell(stack: ItemStack, amount: BigDecimal) {
     balanceHandler.modifyUser(uuid) { it.apply { balance += amount } }
     this.inventory.removeStack(this.inventory.method_7371(stack), stack.count)
 }
+
+fun ServerPlayerEntity.buy(amount: BigDecimal) {
+    balanceHandler.modifyUser(uuid) { it.apply { balance -= amount } }
+}
+
+fun ServerPlayerEntity.sell(amount: BigDecimal) {
+    balanceHandler.modifyUser(uuid) { it.apply { balance += amount } }
+}
