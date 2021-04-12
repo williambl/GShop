@@ -24,11 +24,18 @@
 
 package com.williambl.gshop
 
+import ca.stellardrift.colonel.api.ServerArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.williambl.gshop.configs.GShopConfig
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
 import io.github.gunpowder.api.builders.ChestGui
 import io.github.gunpowder.api.builders.Command
+import me.lucko.fabric.api.permissions.v0.Permissions
+import net.minecraft.command.argument.ArgumentTypes
+import net.minecraft.command.argument.EntityArgumentType.getPlayer
+import net.minecraft.command.argument.EntityArgumentType.player
+import net.minecraft.command.argument.serialize.ConstantArgumentSerializer
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.screen.NamedScreenHandlerFactory
@@ -36,6 +43,7 @@ import net.minecraft.screen.ScreenHandler
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
+import net.minecraft.util.Identifier
 
 class GShop : GunpowderModule {
     override val name = "gshop"
@@ -46,9 +54,31 @@ class GShop : GunpowderModule {
     override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
         Command.builder(dispatcher) {
             command("shop") {
-                executes { ctx ->
-                    ctx.source.player.openHandledScreen(config.shops[0].gui(ctx.source.player))
-                    0
+                requires(Permissions.require("gshops.viewShop", 2)::test)
+                argument("shop", ShopArgumentType()) {
+                    executes { ctx ->
+                        val shop = getShop(ctx, "shop")
+                        if (!Permissions.check(ctx.source, "gshops.viewShop.${shop.name}", 2)) {
+                            ctx.source.sendError(LiteralText("No permission to view shop: ${shop.name}"))
+                            return@executes 0
+                        }
+                        ctx.source.player.openHandledScreen(shop.gui(ctx.source.player))
+                        0
+                    }
+                }
+            }
+
+            command("showshop") {
+                requires(Permissions.require("gshops.showShop", 3)::test)
+                argument("target", player()) {
+                    argument("shop", ShopArgumentType()) {
+                        executes { ctx ->
+                            val player = getPlayer(ctx, "target")
+                            val shop = getShop(ctx, "shop")
+                            player.openHandledScreen(shop.gui(player))
+                            0
+                        }
+                    }
                 }
             }
         }
@@ -56,5 +86,14 @@ class GShop : GunpowderModule {
 
     override fun registerConfigs() {
         gunpowder.registry.registerConfig("gshop.yml", GShopConfig::class.java, GShopConfig())
+    }
+
+    override fun onInitialize() {
+        super.onInitialize()
+        ServerArgumentType.builder<ShopArgumentType>(Identifier("gshop:shop"))
+            .type(ShopArgumentType::class.java)
+            .serializer(ShopArgumentType.serializer)
+            .fallbackProvider { StringArgumentType.word() }
+            .register()
     }
 }
