@@ -26,7 +26,10 @@ package com.williambl.gshop
 
 import ca.stellardrift.colonel.api.ServerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType.*
 import com.williambl.gshop.configs.GShopConfig
+import com.williambl.gshop.shop.ShopCategory
+import com.williambl.gshop.shop.entry.ItemStackShopEntry
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
 import io.github.gunpowder.api.builders.ChestGui
@@ -38,12 +41,15 @@ import net.minecraft.command.argument.EntityArgumentType.player
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
+import net.minecraft.item.Items
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.screen.NamedScreenHandlerFactory
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import org.jetbrains.exposed.sql.stringLiteral
 
 class GShop : GunpowderModule {
     override val name = "gshop"
@@ -54,11 +60,11 @@ class GShop : GunpowderModule {
     override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
         Command.builder(dispatcher) {
             command("shop") {
-                requires(Permissions.require("gshops.viewShop", 2)::test)
+                requires(Permissions.require("gshop.viewShop", 2)::test)
                 argument("shop", ShopArgumentType()) {
                     executes { ctx ->
                         val shop = getShop(ctx, "shop")
-                        if (!Permissions.check(ctx.source, "gshops.viewShop.${shop.name}", 2)) {
+                        if (!Permissions.check(ctx.source, "gshop.viewshop.${shop.name.toLowerCase()}", 2)) {
                             ctx.source.sendError(LiteralText("No permission to view shop: ${shop.name}"))
                             return@executes 0
                         }
@@ -69,7 +75,7 @@ class GShop : GunpowderModule {
             }
 
             command("showshop") {
-                requires(Permissions.require("gshops.showShop", 3)::test)
+                requires(Permissions.require("gshop.showshop", 3)::test)
                 argument("target", player()) {
                     argument("shop", ShopArgumentType()) {
                         executes { ctx ->
@@ -81,11 +87,21 @@ class GShop : GunpowderModule {
                     }
                 }
             }
+
+            command("shopconfigurator") {
+                requires(Permissions.require("gshop.config")::test)
+                literal("export-itemstack") {
+                    executes { ctx ->
+                        ctx.source.sendFeedback(LiteralText(CompoundTag().also { ctx.source.player.mainHandStack.toTag(it) }.toString()), false)
+                        0
+                    }
+                }
+            }
         }
     }
 
     override fun registerConfigs() {
-        gunpowder.registry.registerConfig("gshop.yml", GShopConfig::class.java, GShopConfig())
+        gunpowder.registry.registerConfig("gshop.yml", GShopConfig::class.java, "gshop.yml")
     }
 
     override fun onInitialize() {
@@ -93,7 +109,7 @@ class GShop : GunpowderModule {
         ServerArgumentType.builder<ShopArgumentType>(Identifier("gshop:shop"))
             .type(ShopArgumentType::class.java)
             .serializer(ShopArgumentType.serializer)
-            .fallbackProvider { StringArgumentType.word() }
+            .fallbackProvider { word() }
             .register()
     }
 }
