@@ -74,8 +74,8 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             if (actionType == SlotActionType.PICKUP) stackToSell.count = max(stackToSell.count - 1, 1)
             update()
         }
-        button(1, 2, Items.RED_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("-5"))) { actionType, container ->
-            if (actionType == SlotActionType.PICKUP) stackToSell.count = max(stackToSell.count - 5, 1)
+        button(1, 2, Items.RED_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("-10"))) { actionType, container ->
+            if (actionType == SlotActionType.PICKUP) stackToSell.count = max(stackToSell.count - 10, 1)
             update()
         }
         button(0, 2, Items.RED_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("-64"))) { actionType, container ->
@@ -86,8 +86,8 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             if (actionType == SlotActionType.PICKUP) stackToSell.count++
             update()
         }
-        button(7, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+5"))) { actionType, container ->
-            if (actionType == SlotActionType.PICKUP) stackToSell.count += 5
+        button(7, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+10"))) { actionType, container ->
+            if (actionType == SlotActionType.PICKUP) stackToSell.count += 10
             update()
         }
         button(8, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+64"))) { actionType, container ->
