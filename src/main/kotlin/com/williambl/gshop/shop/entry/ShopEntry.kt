@@ -63,7 +63,7 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             sellButtonIcon.setCustomName(if (player.canSell(stackToSell)) LiteralText("SELL") else LiteralText("Cannot Sell").formatted(Formatting.DARK_RED))
             buyButtonIcon.setCustomName(if (player.canBuy(amountToBuy)) LiteralText("BUY") else LiteralText("Cannot Buy").formatted(Formatting.DARK_RED))
 
-            sellButtonIcon.setLore(listOf(LiteralText("$$amountToSell")))
+            sellButtonIcon.setLore(listOf(LiteralText("$$amountToSell"), LiteralText("Shift-Click: Sell All ($${priceToSell*BigDecimal(player.inventory.count(stackToSell))})")))
             buyButtonIcon.setLore(listOf(LiteralText("$$amountToBuy")))
         }
 
@@ -96,9 +96,16 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
         }
 
         button(3, 4, sellButtonIcon) { actionType, container ->
-            if (player.canSell(stackToSell)) {
-                player.sell(stackToSell, amountToSell)
-                player.closeHandledScreen()
+            if (actionType == SlotActionType.QUICK_MOVE) {
+                val stacks = player.inventory.removeAll(stackToSell)
+                if (stacks > 0) {
+                    player.sell(priceToSell * BigDecimal(stacks))
+                }
+            } else {
+                if (player.canSell(stackToSell)) {
+                    player.sell(stackToSell, amountToSell)
+                    player.closeHandledScreen()
+                }
             }
         }
 
