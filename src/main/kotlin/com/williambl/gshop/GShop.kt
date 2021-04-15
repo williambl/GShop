@@ -75,12 +75,28 @@ class GShop : GunpowderModule {
             }
 
             command("shopconfigurator") {
-                requires(Permissions.require("gshop.config")::test)
+                requires(Permissions.require("gshop.config", 3)::test)
                 literal("export-itemstack") {
                     executes { ctx ->
                         ctx.source.sendFeedback(LiteralText(CompoundTag().also { ctx.source.player.mainHandStack.toTag(it) }.toString()), false)
                         0
                     }
+                }
+            }
+
+            command("shops") {
+                requires(Permissions.require("gshop.listshops", 2)::test)
+                executes { ctx ->
+                    val shops = config.shops.filter { Permissions.check(ctx.source, "gshop.viewshop.${it.name.toLowerCase()}", true) }
+                    if (shops.size > 0) {
+                        ctx.source.sendFeedback(LiteralText("Available shops:"), false)
+                    } else {
+                        ctx.source.sendError(LiteralText("No shops are available to you"))
+                    }
+                    for (shop in shops) {
+                        ctx.source.sendFeedback(LiteralText(shop.name), false)
+                    }
+                    shops.size
                 }
             }
         }
