@@ -27,6 +27,7 @@ package com.williambl.gshop
 import ca.stellardrift.colonel.api.ServerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType.*
 import com.williambl.gshop.configs.GShopConfig
+import com.williambl.gshop.shop.gui
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
 import io.github.gunpowder.api.builders.Command

@@ -30,32 +30,31 @@ import io.github.gunpowder.api.builders.ChestGui
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.LiteralText
 
-data class Shop(val name: String, val categories: List<ShopCategory>) {
+data class Shop(val name: String, val categories: List<ShopCategory>)
 
-    private fun screen(): Screen = { player -> {
-        clearButtons()
-        categories.forEachIndexed { i, page ->
-            button(i, 0, page.icon.stack.setCustomName(LiteralText(page.name))) { _, container -> page.screen(::screen)(player)(container) }
-        }
-    }}
+private fun Shop.screen(): Screen = { player -> {
+    clearButtons()
+    categories.forEachIndexed { i, page ->
+        button(i, 0, page.icon.stack.setCustomName(LiteralText(page.name))) { _, container -> page.screen(::screen)(player)(container) }
+    }
+}}
 
-    fun gui(player: ServerPlayerEntity): ChestGuiScreenHandlerFactory {
-        val gui = ChestGui.factory {
-            player(player)
+fun Shop.gui(player: ServerPlayerEntity): ChestGuiScreenHandlerFactory {
+    val gui = ChestGui.factory {
+        player(player)
 
-            if (categories.size != 1) {
-                screen()(player)()
-            } else {
-                var hasShown = false
-                refreshInterval(1) { container ->
-                    if (!hasShown) {
-                        categories.first().screen(::screen)(player)(container)
-                        hasShown = true
-                    }
+        if (categories.size != 1) {
+            screen()(player)()
+        } else {
+            var hasShown = false
+            refreshInterval(1) { container ->
+                if (!hasShown) {
+                    categories.first().screen(::screen)(player)(container)
+                    hasShown = true
                 }
             }
         }
-
-        return ChestGuiScreenHandlerFactory(gui, LiteralText(name))
     }
+
+    return ChestGuiScreenHandlerFactory(gui, LiteralText(name))
 }

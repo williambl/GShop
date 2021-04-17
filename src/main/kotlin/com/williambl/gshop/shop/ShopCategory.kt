@@ -30,15 +30,15 @@ import com.williambl.gshop.shop.entry.ShopEntry
 import net.minecraft.item.Items
 import net.minecraft.text.LiteralText
 
-data class ShopCategory(val name: String, val icon: ItemStackShopEntry, val entries: List<ShopEntry>) {
-    fun screen(previous: (() -> Screen)? = null): Screen = { player -> {
-        clearButtons()
-        entries.forEachIndexed { i, entry ->
-            button(i, 0, entry.icon) { actionType, container -> entry.screen {screen(previous)}(player)(container) }
-        }
+data class ShopCategory(val name: String, val icon: ItemStackShopEntry, val entries: List<ShopEntry>)
 
-        if (previous != null) {
-            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(player)(container) }
-        }
-    }}
-}
+fun ShopCategory.screen(previous: (() -> Screen)? = null): Screen = { player -> {
+    clearButtons()
+    entries.forEachIndexed { i, entry ->
+        button(i, 0, entry.icon) { actionType, container -> entry.screen {screen(previous)}(player)(container) }
+    }
+
+    if (previous != null) {
+        button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(player)(container) }
+    }
+}}
