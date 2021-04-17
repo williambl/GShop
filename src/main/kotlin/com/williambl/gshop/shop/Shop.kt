@@ -32,7 +32,7 @@ import net.minecraft.text.LiteralText
 
 data class Shop(val name: String, val categories: List<ShopCategory>) {
 
-    fun screen(): Screen = { player -> {
+    private fun screen(): Screen = { player -> {
         clearButtons()
         categories.forEachIndexed { i, page ->
             button(i, 0, page.icon.stack.setCustomName(LiteralText(page.name))) { _, container -> page.screen(::screen)(player)(container) }
@@ -44,13 +44,7 @@ data class Shop(val name: String, val categories: List<ShopCategory>) {
             player(player)
 
             if (categories.size != 1) {
-                categories.forEachIndexed { i, category ->
-                    button(
-                        i,
-                        0,
-                        category.icon.stack.setCustomName(LiteralText(category.name))
-                    ) { _, container -> category.screen(::screen)(player)(container) }
-                }
+                screen()(player)()
             } else {
                 var hasShown = false
                 refreshInterval(1) { container ->
