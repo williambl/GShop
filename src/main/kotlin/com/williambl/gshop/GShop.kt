@@ -47,7 +47,7 @@ class GShop : GunpowderModule {
     override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
         Command.builder(dispatcher) {
             command("shop") {
-                requires(Permissions.require("gshop.viewshop", 2)::test)
+                requires(Permissions.require("gshop.viewshop", 1)::test)
                 argument("shop", ShopArgumentType()) {
                     executes { ctx ->
                         val shop = getShop(ctx, "shop")
@@ -62,7 +62,7 @@ class GShop : GunpowderModule {
             }
 
             command("showshop") {
-                requires(Permissions.require("gshop.showshop", 3)::test)
+                requires(Permissions.require("gshop.showshop", 2)::test)
                 argument("target", player()) {
                     argument("shop", ShopArgumentType()) {
                         executes { ctx ->
@@ -76,7 +76,7 @@ class GShop : GunpowderModule {
             }
 
             command("shopconfigurator") {
-                requires(Permissions.require("gshop.config", 3)::test)
+                requires(Permissions.require("gshop.config", 2)::test)
                 literal("export-itemstack") {
                     executes { ctx ->
                         ctx.source.sendFeedback(LiteralText(CompoundTag().also { ctx.source.player.mainHandStack.toTag(it) }.toString()), false)
@@ -86,10 +86,10 @@ class GShop : GunpowderModule {
             }
 
             command("shops") {
-                requires(Permissions.require("gshop.listshops", 2)::test)
+                requires(Permissions.require("gshop.listshops", 1)::test)
                 executes { ctx ->
                     val shops = config.shops.filter { Permissions.check(ctx.source, "gshop.viewshop.${it.name.toLowerCase()}", true) }
-                    if (shops.size > 0) {
+                    if (shops.isNotEmpty()) {
                         ctx.source.sendFeedback(LiteralText("Available shops:"), false)
                     } else {
                         ctx.source.sendError(LiteralText("No shops are available to you"))
