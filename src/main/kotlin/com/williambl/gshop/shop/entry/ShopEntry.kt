@@ -121,7 +121,7 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
         }
 
         if (priceToSell >= BigDecimal.ZERO) {
-            button(3, 4, sellButtonIcon) { actionType, container ->
+            button(if (priceToBuy >= BigDecimal.ZERO) 3 else 4, 4, sellButtonIcon) { actionType, container ->
                 if (actionType == SlotActionType.QUICK_MOVE) {
                     val stacks = player.inventory.removeAll(stackToSell)
                     if (stacks > 0) {
@@ -137,7 +137,7 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
         }
 
         if (priceToBuy >= BigDecimal.ZERO) {
-            button(5, 4, buyButtonIcon) { actionType, container ->
+            button(if (priceToSell >= BigDecimal.ZERO) 5 else 4, 4, buyButtonIcon) { actionType, container ->
                 if (player.canBuy(amountToBuy)) {
                     player.buy(stackToSell, amountToBuy)
                     player.closeHandledScreen()
