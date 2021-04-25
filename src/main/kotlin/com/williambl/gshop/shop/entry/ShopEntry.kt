@@ -112,11 +112,11 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             update()
         }
         button(7, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+10"))) { actionType, container ->
-            if (actionType == SlotActionType.PICKUP) stackToSell.count += min(stackToSell.count + 10, stackToSell.maxCount)
+            if (actionType == SlotActionType.PICKUP) stackToSell.count = min(stackToSell.count + 10, stackToSell.maxCount)
             update()
         }
         button(8, 2, Items.GREEN_STAINED_GLASS_PANE.defaultStack.setCustomName(LiteralText("+64"))) { actionType, container ->
-            if (actionType == SlotActionType.PICKUP) stackToSell.count += min(stackToSell.count + 64, stackToSell.maxCount)
+            if (actionType == SlotActionType.PICKUP) stackToSell.count = min(stackToSell.count + 64, stackToSell.maxCount)
             update()
         }
 
