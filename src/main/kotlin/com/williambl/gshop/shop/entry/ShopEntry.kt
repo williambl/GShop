@@ -95,24 +95,28 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             update()
         }
 
-        button(3, 4, sellButtonIcon) { actionType, container ->
-            if (actionType == SlotActionType.QUICK_MOVE) {
-                val stacks = player.inventory.removeAll(stackToSell)
-                if (stacks > 0) {
-                    player.sell(priceToSell * BigDecimal(stacks))
-                }
-            } else {
-                if (player.canSell(stackToSell)) {
-                    player.sell(stackToSell, amountToSell)
-                    player.closeHandledScreen()
+        if (priceToSell >= BigDecimal.ZERO) {
+            button(3, 4, sellButtonIcon) { actionType, container ->
+                if (actionType == SlotActionType.QUICK_MOVE) {
+                    val stacks = player.inventory.removeAll(stackToSell)
+                    if (stacks > 0) {
+                        player.sell(priceToSell * BigDecimal(stacks))
+                    }
+                } else {
+                    if (player.canSell(stackToSell)) {
+                        player.sell(stackToSell, amountToSell)
+                        player.closeHandledScreen()
+                    }
                 }
             }
         }
 
-        button(5, 4, buyButtonIcon) { actionType, container ->
-            if (player.canBuy(amountToBuy)) {
-                player.buy(stackToSell, amountToBuy)
-                player.closeHandledScreen()
+        if (priceToBuy >= BigDecimal.ZERO) {
+            button(5, 4, buyButtonIcon) { actionType, container ->
+                if (player.canBuy(amountToBuy)) {
+                    player.buy(stackToSell, amountToBuy)
+                    player.closeHandledScreen()
+                }
             }
         }
 
