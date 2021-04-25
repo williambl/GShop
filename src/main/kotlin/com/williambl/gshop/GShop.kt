@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 GunpowderMC
+ * Copyright (c) 2021 Will BL
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package com.williambl.gshop
 import ca.stellardrift.colonel.api.ServerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType.*
 import com.williambl.gshop.configs.GShopConfig
+import com.williambl.gshop.shop.gui
 import io.github.gunpowder.api.GunpowderMod
 import io.github.gunpowder.api.GunpowderModule
 import io.github.gunpowder.api.builders.Command
@@ -46,7 +47,7 @@ class GShop : GunpowderModule {
     override fun registerCommands() = gunpowder.registry.registerCommand { dispatcher ->
         Command.builder(dispatcher) {
             command("shop") {
-                requires(Permissions.require("gshop.viewshop", 2)::test)
+                requires(Permissions.require("gshop.viewshop", 1)::test)
                 argument("shop", ShopArgumentType()) {
                     executes { ctx ->
                         val shop = getShop(ctx, "shop")
@@ -61,7 +62,7 @@ class GShop : GunpowderModule {
             }
 
             command("showshop") {
-                requires(Permissions.require("gshop.showshop", 3)::test)
+                requires(Permissions.require("gshop.showshop", 2)::test)
                 argument("target", player()) {
                     argument("shop", ShopArgumentType()) {
                         executes { ctx ->
@@ -75,12 +76,28 @@ class GShop : GunpowderModule {
             }
 
             command("shopconfigurator") {
-                requires(Permissions.require("gshop.config")::test)
+                requires(Permissions.require("gshop.config", 2)::test)
                 literal("export-itemstack") {
                     executes { ctx ->
                         ctx.source.sendFeedback(LiteralText(CompoundTag().also { ctx.source.player.mainHandStack.toTag(it) }.toString()), false)
                         0
                     }
+                }
+            }
+
+            command("shops") {
+                requires(Permissions.require("gshop.listshops", 1)::test)
+                executes { ctx ->
+                    val shops = config.shops.filter { Permissions.check(ctx.source, "gshop.viewshop.${it.name.toLowerCase()}", true) }
+                    if (shops.isNotEmpty()) {
+                        ctx.source.sendFeedback(LiteralText("Available shops:"), false)
+                    } else {
+                        ctx.source.sendError(LiteralText("No shops are available to you"))
+                    }
+                    for (shop in shops) {
+                        ctx.source.sendFeedback(LiteralText(shop.name), false)
+                    }
+                    shops.size
                 }
             }
         }
