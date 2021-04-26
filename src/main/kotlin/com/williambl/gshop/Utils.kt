@@ -33,9 +33,13 @@ import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
+import org.apache.logging.log4j.Logger
 
 val config: GShopConfig
     get() = GunpowderMod.instance.registry.getConfig(GShopConfig::class.java)
+
+val logger: Logger
+    get() = GunpowderMod.instance.logger
 
 typealias Screen = (ServerPlayerEntity) -> ChestGui.Container.() -> Unit
 

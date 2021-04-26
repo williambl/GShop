@@ -25,6 +25,7 @@
 package com.williambl.gshop.shop
 
 import com.williambl.gshop.Screen
+import com.williambl.gshop.logger
 import com.williambl.gshop.shop.entry.ItemStackShopEntry
 import com.williambl.gshop.shop.entry.ShopEntry
 import net.minecraft.item.Items
@@ -35,7 +36,11 @@ data class ShopCategory(val name: String, val icon: ItemStackShopEntry, val entr
 fun ShopCategory.screen(previous: (() -> Screen)? = null): Screen = { player -> {
     clearButtons()
     entries.forEachIndexed { i, entry ->
-        button(i, 0, entry.icon) { actionType, container -> entry.screen {screen(previous)}(player)(container) }
+        if (i >= 53) {
+            logger.warn("Category ${this@screen.name} has too many entries! Entry $i will not be shown.")
+        } else {
+            button(i % 9, i / 9, entry.icon) { actionType, container -> entry.screen {screen(previous)}(player)(container) }
+        }
     }
 
     if (previous != null) {
