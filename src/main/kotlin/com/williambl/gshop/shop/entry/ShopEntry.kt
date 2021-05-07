@@ -72,8 +72,9 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
     override val type: ShopEntryType = ShopEntryType.ITEM_STACK
     override val icon: ItemStack = stack.copy()
 
-    override fun screen(previous: (() -> Screen)?): Screen = { player -> {
+    override fun screen(previous: (() -> Screen)?): Screen = s@{
         clearButtons()
+        val player = getPlayer() ?: return@s
 
         val stackToSell = stack.copy()
         val sellButtonIcon = Items.PINK_DYE.defaultStack.setCustomName(LiteralText("SELL"))
@@ -126,18 +127,14 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
                     val stacks = player.inventory.removeAll(stackToSell)
                     if (stacks > 0) {
                         player.sell(priceToSell * BigDecimal(stacks))
-                        //TODO: Close GUI in new Gunpowder
-                        if (previous != null) {
-                            previous()(player)(container)
-                        }
+                        close()
+                        player.closeHandledScreen()
                     }
                 } else {
                     if (player.canSell(stackToSell)) {
                         player.sell(stackToSell, amountToSell)
-                        //TODO: Close GUI in new Gunpowder
-                        if (previous != null) {
-                            previous()(player)(container)
-                        }
+                        close()
+                        player.closeHandledScreen()
                     }
                 }
             }
@@ -147,18 +144,16 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             button(if (priceToSell >= BigDecimal.ZERO) 5 else 4, 4, buyButtonIcon) { actionType, container ->
                 if (player.canBuy(amountToBuy)) {
                     player.buy(stackToSell, amountToBuy)
-                    //TODO: Close GUI in new Gunpowder
-                    if (previous != null) {
-                        previous()(player)(container)
-                    }
+                    close()
+                    player.closeHandledScreen()
                 }
             }
         }
 
         if (previous != null) {
-            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(player)(container) }
+            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(container) }
         }
-    }}
+    }
 
     class Serializer : StdSerializer<ItemStackShopEntry>(ItemStackShopEntry::class.java) {
         override fun serialize(value: ItemStackShopEntry, gen: JsonGenerator, provider: SerializerProvider) {
@@ -190,8 +185,9 @@ data class CommandShopEntry(val command: String, override val icon: ItemStack, o
     override val type: ShopEntryType = ShopEntryType.COMMAND
     override val priceToSell: BigDecimal = BigDecimal.ZERO
 
-    override fun screen(previous: (() -> Screen)?): Screen = { player -> {
+    override fun screen(previous: (() -> Screen)?): Screen = s@{
         clearButtons()
+        val player = getPlayer() ?: return@s
 
         val buyButtonIcon = Items.LIME_DYE.defaultStack.setCustomName(LiteralText("BUY"))
         buyButtonIcon.setCustomName(if (player.canBuy(priceToBuy)) LiteralText("BUY") else LiteralText("Cannot Buy").formatted(Formatting.DARK_RED))
@@ -203,17 +199,15 @@ data class CommandShopEntry(val command: String, override val icon: ItemStack, o
             if (player.canBuy(priceToBuy)) {
                 player.buy(priceToBuy)
                 player.server.commandManager.execute(player.server.commandSource, command.replace("--buyer--", player.gameProfile.name))
-                //TODO: Close GUI in new Gunpowder
-                if (previous != null) {
-                    previous()(player)(container)
-                }
+                close()
+                player.closeHandledScreen()
             }
         }
 
         if (previous != null) {
-            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(player)(container) }
+            button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(container) }
         }
-    }}
+    }
 
     class Serializer : StdSerializer<CommandShopEntry>(CommandShopEntry::class.java) {
         override fun serialize(value: CommandShopEntry, gen: JsonGenerator, provider: SerializerProvider) {

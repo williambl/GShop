@@ -31,7 +31,6 @@ import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
-import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import org.apache.logging.log4j.Logger
 
@@ -41,7 +40,7 @@ val config: GShopConfig
 val logger: Logger
     get() = GunpowderMod.instance.logger
 
-typealias Screen = (ServerPlayerEntity) -> ChestGui.Container.() -> Unit
+typealias Screen = ChestGui.Container.() -> Unit
 
 fun ItemStack.setLore(text: Collection<Text>) {
     getOrCreateSubTag("display").put("Lore", ListTag().also { tag -> tag.addAll(text.map { StringTag.of(Text.Serializer.toJson(it)) })})

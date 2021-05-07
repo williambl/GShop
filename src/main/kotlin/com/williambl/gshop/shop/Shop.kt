@@ -33,28 +33,28 @@ import net.minecraft.text.LiteralText
 
 data class Shop(val name: String, val categories: List<ShopCategory>)
 
-private fun Shop.screen(): Screen = { player -> {
+private fun Shop.screen(): Screen = {
     clearButtons()
     categories.forEachIndexed { i, page ->
         if (i >= 53) {
             logger.warn("Shop ${this@screen.name} has too many categories! Category ${page.name} will not be shown.")
         } else {
-            button(i % 9, i / 9, page.icon.stack.setCustomName(LiteralText(page.name))) { _, container -> page.screen(::screen)(player)(container) }
+            button(i % 9, i / 9, page.icon.stack.setCustomName(LiteralText(page.name))) { _, container -> page.screen(::screen)(container) }
         }
     }
-}}
+}
 
 fun Shop.gui(player: ServerPlayerEntity): ChestGuiScreenHandlerFactory {
     val gui = ChestGui.factory {
         player(player)
 
         if (categories.size != 1) {
-            screen()(player)()
+            screen()()
         } else {
             var hasShown = false
             refreshInterval(1) { container ->
                 if (!hasShown) {
-                    categories.first().screen(::screen)(player)(container)
+                    categories.first().screen(::screen)(container)
                     hasShown = true
                 }
             }

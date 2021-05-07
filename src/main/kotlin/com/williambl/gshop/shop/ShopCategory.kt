@@ -33,17 +33,17 @@ import net.minecraft.text.LiteralText
 
 data class ShopCategory(val name: String, val icon: ItemStackShopEntry, val entries: List<ShopEntry>)
 
-fun ShopCategory.screen(previous: (() -> Screen)? = null): Screen = { player -> {
+fun ShopCategory.screen(previous: (() -> Screen)? = null): Screen = {
     clearButtons()
     entries.forEachIndexed { i, entry ->
         if (i >= 53) {
             logger.warn("Category ${this@screen.name} has too many entries! Entry $i will not be shown.")
         } else {
-            button(i % 9, i / 9, entry.icon) { actionType, container -> entry.screen {screen(previous)}(player)(container) }
+            button(i % 9, i / 9, entry.icon) { actionType, container -> entry.screen {screen(previous)}(container) }
         }
     }
 
     if (previous != null) {
-        button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(player)(container) }
+        button(8, 5, Items.FEATHER.defaultStack.setCustomName(LiteralText("Back"))) { _, container -> previous()(container) }
     }
-}}
+}
