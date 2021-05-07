@@ -126,11 +126,18 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
                     val stacks = player.inventory.removeAll(stackToSell)
                     if (stacks > 0) {
                         player.sell(priceToSell * BigDecimal(stacks))
+                        //TODO: Close GUI in new Gunpowder
+                        if (previous != null) {
+                            previous()(player)(container)
+                        }
                     }
                 } else {
                     if (player.canSell(stackToSell)) {
                         player.sell(stackToSell, amountToSell)
-                        player.closeHandledScreen()
+                        //TODO: Close GUI in new Gunpowder
+                        if (previous != null) {
+                            previous()(player)(container)
+                        }
                     }
                 }
             }
@@ -140,7 +147,10 @@ data class ItemStackShopEntry(val stack: ItemStack, override val priceToBuy: Big
             button(if (priceToSell >= BigDecimal.ZERO) 5 else 4, 4, buyButtonIcon) { actionType, container ->
                 if (player.canBuy(amountToBuy)) {
                     player.buy(stackToSell, amountToBuy)
-                    player.closeHandledScreen()
+                    //TODO: Close GUI in new Gunpowder
+                    if (previous != null) {
+                        previous()(player)(container)
+                    }
                 }
             }
         }
@@ -193,7 +203,10 @@ data class CommandShopEntry(val command: String, override val icon: ItemStack, o
             if (player.canBuy(priceToBuy)) {
                 player.buy(priceToBuy)
                 player.server.commandManager.execute(player.server.commandSource, command.replace("--buyer--", player.gameProfile.name))
-                player.closeHandledScreen()
+                //TODO: Close GUI in new Gunpowder
+                if (previous != null) {
+                    previous()(player)(container)
+                }
             }
         }
 
